@@ -43,3 +43,9 @@ export const optionGame = [
         slug: "giai-do"
     }
 ]
+export const TYPE_GOOGLE = 1;
+export const TYPE_FSHARE = 2;
+export const TYPE_LINKS = [
+    {id: TYPE_GOOGLE, name: "Google link"},
+    {id: TYPE_FSHARE, name: "Fshare link"},
+]

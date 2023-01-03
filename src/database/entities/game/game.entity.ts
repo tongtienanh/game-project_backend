@@ -1,6 +1,7 @@
 import {CoreBaseEntity} from "../core/base.entity";
 import {Column, Entity, OneToMany} from "typeorm";
 import {GameTag} from "./game-tag.entity";
+import {Download} from "./download.entity";
 
 @Entity("game")
 export class Game extends CoreBaseEntity {
@@ -21,4 +22,7 @@ export class Game extends CoreBaseEntity {
 
     @OneToMany(() => GameTag, (gameTag) => gameTag.game)
     gameTag: GameTag[];
+
+    @OneToMany(() => Download, (download) => download.game)
+    download: Download[];
 }

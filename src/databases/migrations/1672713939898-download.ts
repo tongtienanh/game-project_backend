@@ -23,7 +23,7 @@ export class download1672713939898 implements MigrationInterface {
                     }),
                     new TableColumn({
                         name: "link",
-                        type: "int",
+                        type: "varchar",
                         isNullable: true
                     }),
                     ...DatabaseUtils.getDefaultColumns(),

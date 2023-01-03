@@ -19,6 +19,10 @@ export class CreateGameDto {
     @ApiProperty({example: "The game of the year"})
     description: string;
 
+    links?: Link[];
+
+    @Transform(TransformUtils.parseNumberArray)
+    tags: number[];
 
     toEntity(): Game {
         const entity = new Game();
@@ -32,4 +36,11 @@ export class CreateGameDto {
         return entity;
     }
 
+}
+class Link {
+    @Transform(TransformUtils.parseNumber)
+    type: number;
+
+    @Transform(TransformUtils.parseString)
+    url: string;
 }

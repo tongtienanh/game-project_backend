@@ -8,3 +8,4 @@ export * from './local-file/localFile.entity';
 export * from './game/game.entity';
 export * from './game/game-tag.entity';
 export * from './game/tag.entity';
+export * from './game/download.entity';
