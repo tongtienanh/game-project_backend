@@ -9,3 +9,5 @@ export * from './game/game.entity';
 export * from './game/game-tag.entity';
 export * from './game/tag.entity';
 export * from './game/download.entity';
+export * from './game/category.entity';
+export * from './game/game-category.entity';

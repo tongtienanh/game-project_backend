@@ -26,6 +26,11 @@ export class download1672713939898 implements MigrationInterface {
                         type: "varchar",
                         isNullable: true
                     }),
+                    new TableColumn({
+                        name: "type",
+                        type: "int",
+                        isNullable: true
+                    }),
                     ...DatabaseUtils.getDefaultColumns(),
                 ]
             })

@@ -9,6 +9,7 @@ import 'dotenv/config';
 import {CoreLoggerService} from "../../common/services/logger/base-logger.service";
 import {ConvertNameImage} from "../../common/utils/convert-name-image";
 import {Download, GameTag} from "../../../database/entities";
+import {ResponseEntity} from "../../../common/resources/base/response.entity";
 
 @Injectable()
 export class GameImplService {
@@ -31,7 +32,9 @@ export class GameImplService {
         originalname = ConvertNameImage.toSlug(splitName[0]) + '.' + typeImage;
         this.logger.debug("originalname:", originalname)
         const bucketS3 = "image-game";
-        await this.uploadS3(file.buffer, bucketS3, originalname)
+        const dataS3 = await this.uploadS3(file.buffer, bucketS3, originalname);
+
+        return new ResponseEntity<any>(dataS3);
     }
 
     async uploadS3(file, bucket, originalname) {
@@ -117,6 +120,9 @@ export class GameImplService {
             tags.push(entity);
         }
         await this.gameTagRepository.insert(tags);
+    }
+    async storeCategory(gameId, request: CreateGameDto): Promise<void> {
+
     }
 
     findAll() {

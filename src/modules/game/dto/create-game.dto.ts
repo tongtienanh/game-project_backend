@@ -19,10 +19,17 @@ export class CreateGameDto {
     @ApiProperty({example: "The game of the year"})
     description: string;
 
+    @Transform(TransformUtils.parseString)
+    @ApiProperty({example: "The game of the year"})
+    content: string;
+
     links?: Link[];
 
     @Transform(TransformUtils.parseNumberArray)
     tags: number[];
+
+    @Transform(TransformUtils.parseNumberArray)
+    categories?: number[];
 
     toEntity(): Game {
         const entity = new Game();
@@ -30,6 +37,7 @@ export class CreateGameDto {
         entity.image = this.image;
         entity.description = this.description;
         entity.slug = HelperUtils.toSlug(this.name);
+        entity.content = this.content;
         entity.createdAt = new Date();
         entity.updatedAt = new Date();
 

@@ -6,7 +6,8 @@ import { GenerateRolePermissionCommand } from './role-permission/generate-role.c
 import { ModulePermission } from './../database/entities/role/module.entity';
 import { Permission } from './../database/entities/role/permission.entity';
 import {GenerateTagCommand} from "./tag/generate-tag.command";
-import {Tag} from "../database/entities";
+import {Category, Tag} from "../database/entities";
+import {GenerateCategoryCommand} from "./category/generate-category.command";
 @Module({
   imports: [
     TypeOrmModule.forFeature([
@@ -15,8 +16,9 @@ import {Tag} from "../database/entities";
       ModulePermission,
       Permission,
       Tag,
+      Category,
     ]),
   ],
-  providers: [GenerateRolePermissionCommand, GenerateTagCommand],
+  providers: [GenerateRolePermissionCommand, GenerateTagCommand, GenerateCategoryCommand],
 })
 export class CommandModule {}
