@@ -8,8 +8,9 @@ import {S3} from 'aws-sdk';
 import 'dotenv/config';
 import {CoreLoggerService} from "../../common/services/logger/base-logger.service";
 import {ConvertNameImage} from "../../common/utils/convert-name-image";
-import {Download, GameTag} from "../../../database/entities";
+import {Download, GameCategory, GameTag} from "../../../database/entities";
 import {ResponseEntity} from "../../../common/resources/base/response.entity";
+import {GameRequest} from "../dto/game.request";
 
 @Injectable()
 export class GameImplService {
@@ -81,51 +82,68 @@ export class GameImplService {
 //     });
     }
 
-    async create(request: CreateGameDto): Promise<boolean> {
-        const entity = request.toEntity();
-
-        await this.gameRepository.insert(entity);
-
-        this.logger.debug(request);
-        const gameId = entity.id;
-        this.storeLinkDownload(gameId, request);
-        this.storeTags(gameId, request);
+    async createOrUpdate(request: CreateGameDto): Promise<boolean> {
+        let entity = request.toEntity();
+        if (request.gameId) {
+            entity = await this.gameRepository.findOne({
+                relations: ["gameTag", "download"],
+                where: {
+                    id: request.gameId
+                }
+            })
+        }
+        const links = this.storeLinkDownload(request);
+        const tags = this.storeTags(request);
+        const categories = this.storeCategory(request);
+        entity.gameTag = tags;
+        entity.download = links;
+        entity.gameCategory = categories;
+        await this.gameRepository.save(entity);
 
         return true;
     }
 
-    async storeLinkDownload(id, request: CreateGameDto): Promise<void> {
+    storeLinkDownload(request: CreateGameDto): Download[] {
+        if (!request?.links.length) return [];
         const arrLink = [];
         for (const link of request.links) {
             const linkDownload = new Download();
             linkDownload.type = link.type;
             linkDownload.link = link.url;
-            linkDownload.gameId = id;
             linkDownload.createdAt = new Date();
             linkDownload.updatedAt = new Date();
             arrLink.push(linkDownload);
         }
-        await this.downloadRepository.insert(arrLink);
+        return arrLink;
     }
 
-    async storeTags(gameId, request: CreateGameDto): Promise<void> {
-        await this.gameTagRepository.softDelete({gameId});
+    storeTags(request: CreateGameDto): GameTag[] {
+        if (!request.tags.length) return [];
         const tags = [];
         for (const tag of request.tags) {
             const entity = new GameTag();
-            entity.gameId = gameId;
             entity.tagId = tag;
             entity.createdAt = new Date();
             entity.updatedAt = new Date();
             tags.push(entity);
         }
-        await this.gameTagRepository.insert(tags);
+        return tags;
     }
-    async storeCategory(gameId, request: CreateGameDto): Promise<void> {
-
+    storeCategory(request: CreateGameDto): GameCategory[] {
+        if (!request.categories.length) return [];
+        const categories = [];
+        for (const category of request.categories) {
+            const entity = new GameCategory();
+            entity.categoryId = category;
+            entity.createdAt = new Date();
+            entity.updatedAt = new Date();
+            categories.push(entity)
+        }
+        return categories;
     }
 
-    findAll() {
+    findAll(request: GameRequest) {
+
         return `This action returns all game`;
     }
 

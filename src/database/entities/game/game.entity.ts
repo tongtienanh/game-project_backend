@@ -2,6 +2,7 @@ import {CoreBaseEntity} from "../core/base.entity";
 import {Column, Entity, OneToMany} from "typeorm";
 import {GameTag} from "./game-tag.entity";
 import {Download} from "./download.entity";
+import {GameCategory} from "./game-category.entity";
 
 @Entity("game")
 export class Game extends CoreBaseEntity {
@@ -20,9 +21,12 @@ export class Game extends CoreBaseEntity {
     @Column()
     slug: string;
 
-    @OneToMany(() => GameTag, (gameTag) => gameTag.game)
+    @OneToMany(() => GameTag, (gameTag) => gameTag.game, { cascade: ['insert', 'update']})
     gameTag: GameTag[];
 
-    @OneToMany(() => Download, (download) => download.game)
+    @OneToMany(() => Download, (download) => download.game, { cascade: ['insert', 'update']})
     download: Download[];
+
+    @OneToMany(() => GameCategory, (gameCategory) => gameCategory.game, {cascade: ['insert', 'update']})
+    gameCategory: GameCategory[];
 }

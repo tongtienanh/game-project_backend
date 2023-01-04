@@ -4,6 +4,7 @@ import { CreateGameDto } from '../dto/create-game.dto';
 import { UpdateGameDto } from '../dto/update-game.dto';
 import {FileInterceptor} from "@nestjs/platform-express";
 import {ResponseEntity} from "../../../common/resources/base/response.entity";
+import {GameRequest} from "../dto/game.request";
 
 @Controller('api/game')
 export class GameController {
@@ -11,7 +12,7 @@ export class GameController {
 
   @Post()
   async create(@Body() createGameDto: CreateGameDto): Promise<ResponseEntity<boolean>> {
-    await this.gameService.create(createGameDto);
+    await this.gameService.createOrUpdate(createGameDto);
 
     return new ResponseEntity<boolean>(true);
   }
@@ -22,9 +23,9 @@ export class GameController {
     return await this.gameService.upload(file)
   }
 
-  @Get()
-  findAll() {
-    return this.gameService.findAll();
+  @Get('all')
+  async findAll(@Param() params: GameRequest) {
+    return await this.gameService.findAll(params);
   }
 
   @Get(':id')

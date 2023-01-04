@@ -6,6 +6,9 @@ import {Game} from "../../../database/entities";
 import {HelperUtils} from "../../core/utils/helper.utils";
 
 export class CreateGameDto {
+    @Transform(TransformUtils.parseNumber)
+    gameId?: number;
+
     @IsNotEmpty()
     @Transform(TransformUtils.parseString)
     @ApiProperty({example: "call of dusty"})
