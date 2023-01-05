@@ -3,7 +3,7 @@ import {CreateGameDto} from '../dto/create-game.dto';
 import {UpdateGameDto} from '../dto/update-game.dto';
 import {InjectRepository} from "@nestjs/typeorm";
 import {Game} from "../../../database/entities/game/game.entity";
-import {Repository} from "typeorm";
+import {JoinOptions, Repository} from "typeorm";
 import {S3} from 'aws-sdk';
 import 'dotenv/config';
 import {CoreLoggerService} from "../../common/services/logger/base-logger.service";
@@ -11,7 +11,8 @@ import {ConvertNameImage} from "../../common/utils/convert-name-image";
 import {Download, GameCategory, GameTag} from "../../../database/entities";
 import {ResponseEntity} from "../../../common/resources/base/response.entity";
 import {GameRequest} from "../dto/game.request";
-
+import {gameCategories, gameTags, optionGame, TYPE_GOOGLE, TYPE_LINKS} from "../constants/game.constant";
+import {pick} from 'lodash';
 @Injectable()
 export class GameImplService {
     constructor(
@@ -142,11 +143,66 @@ export class GameImplService {
         return categories;
     }
 
-    findAll(request: GameRequest) {
+    async findAll(request: GameRequest) {
+        const {page = 1, size = 20} = request;
+        const skip = (page - 1) * size;
+        const alias = Game.name;
+        const queryParams = this.getGameFilter(request);
+        const qb = await this.gameRepository.createQueryBuilder(alias)
+            .innerJoinAndSelect(`${alias}.download`, 'download')
+            .innerJoinAndSelect(`${alias}.gameTag`, 'gameTag')
+            .innerJoinAndSelect(`${alias}.gameCategory`, 'gameCategory')
+            .where(queryParams.whereParam.join('AND'), queryParams.replacement)
+            .limit(size)
+            .offset(skip)
+            .getMany()
+        const result = qb.map((item) => {
+            const iGameTags = item.gameTag.map((iGameTag) => {
+                iGameTag["name"] = gameTags[iGameTag.tagId];
+                const tags = optionGame.find(iOption => iOption.id == iGameTag.tagId)
 
-        return `This action returns all game`;
+                return tags
+            })
+            const categories = item.gameCategory.map((iCategory) => {
+                iCategory["name"] = gameCategories[iCategory.categoryId]
+                return pick(iCategory, ['id', 'categoryId', 'name'])
+            })
+            const downloads = item.download.map((iDownload) => {
+                const link = TYPE_LINKS.find(iType => iType.id == iDownload.type)
+                link["url"] = iDownload.link
+                link.id = iDownload.id
+                return link;
+            })
+            return {
+                ...pick(item, ['id', 'image', 'description', 'content', 'name']),
+                gameTag: iGameTags,
+                gameCategory: categories,
+                download: downloads
+            }
+        })
+        return new ResponseEntity(result);
     }
 
+    getGameFilter(request: GameRequest) {
+        let whereParam = [];
+        let replacement = {}
+        if (request.tags?.length) {
+            whereParam.push(`gameTag.game_id IN (:tags)`)
+            replacement['tags'] = request.tags
+        }
+        if (request.categories?.length) {
+            whereParam.push(`gameCategory.category_id IN (:tags)`)
+            replacement['tags'] = request.tags
+        }
+        if (request?.search) {
+            whereParam.push(`${Game.name}.name LIKE :name`);
+            replacement['name'] = request.search + '%'
+        }
+        return {
+            whereParam,
+            replacement
+        }
+    }
     findOne(id: number) {
         return `This action returns a #${id} game`;
     }

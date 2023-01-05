@@ -1,4 +1,4 @@
-import {Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile} from '@nestjs/common';
+import {Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, Query} from '@nestjs/common';
 import { GameImplService } from '../services/game-impl.service';
 import { CreateGameDto } from '../dto/create-game.dto';
 import { UpdateGameDto } from '../dto/update-game.dto';
@@ -24,8 +24,8 @@ export class GameController {
   }
 
   @Get('all')
-  async findAll(@Param() params: GameRequest) {
-    return await this.gameService.findAll(params);
+  async findAll(@Query() request: GameRequest) {
+    return await this.gameService.findAll(request);
   }
 
   @Get(':id')
