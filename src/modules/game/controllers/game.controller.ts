@@ -5,6 +5,7 @@ import { UpdateGameDto } from '../dto/update-game.dto';
 import {FileInterceptor} from "@nestjs/platform-express";
 import {ResponseEntity} from "../../../common/resources/base/response.entity";
 import {GameRequest} from "../dto/game.request";
+import {Permission} from "../../auth/decorators/permisson.decorator";
 
 @Controller('api/game')
 export class GameController {
@@ -24,6 +25,7 @@ export class GameController {
   }
 
   @Get('all')
+  @Permission()
   async findAll(@Query() request: GameRequest) {
     return await this.gameService.findAll(request);
   }

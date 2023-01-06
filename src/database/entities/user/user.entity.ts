@@ -23,17 +23,6 @@ export class User extends CoreBaseEntity{
     userRoles: UserRole[];
 
     @JoinColumn({ name: 'avatarId' })
-    @OneToOne(
-        () => LocalFile,
-        {
-            nullable: true
-        }
-    )
-    public avatar?: LocalFile;
-
-    @Column({ nullable: true })
-    public avatarId?: number;
-
 
     @BeforeInsert()
     @BeforeUpdate()

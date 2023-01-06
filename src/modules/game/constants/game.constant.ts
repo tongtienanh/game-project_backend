@@ -60,9 +60,9 @@ export const gameTags = {
 }
 export const TYPE_GOOGLE = 1;
 export const TYPE_FSHARE = 2;
-export const TYPE_LINKS = [
-    {id: TYPE_GOOGLE, name: "Google link"},
-    {id: TYPE_FSHARE, name: "Fshare link"},
+export let TYPE_LINKS = [
+    {id: TYPE_GOOGLE, name: "Google link", url: ""},
+    {id: TYPE_FSHARE, name: "Fshare link", url: ""},
 ]
 export const GAME_MOI = 1;
 export const PHO_BIEN = 2;

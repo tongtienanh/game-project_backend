@@ -168,10 +168,12 @@ export class GameImplService {
                 return pick(iCategory, ['id', 'categoryId', 'name'])
             })
             const downloads = item.download.map((iDownload) => {
-                const link = TYPE_LINKS.find(iType => iType.id == iDownload.type)
-                link["url"] = iDownload.link
-                link.id = iDownload.id
-                return link;
+                return {
+                    type: iDownload.type,
+                    name: iDownload.type == 1 ? 'Google link': 'Fshare Link',
+                    id: iDownload.id,
+                    url: iDownload.link
+                };
             })
             return {
                 ...pick(item, ['id', 'image', 'description', 'content', 'name']),
