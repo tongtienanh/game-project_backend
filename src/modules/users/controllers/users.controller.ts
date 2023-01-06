@@ -15,7 +15,7 @@ import {
 export class UsersController {
     constructor(private readonly usersService: UsersImplService) {}
 
-  @Post()
+  @Post('register')
   @ApiOperation({ summary: 'Create user' })
   async create(@Body() body: CreateUserDto): Promise<ResponseEntity<boolean>> {
     await this.usersService.create(body);

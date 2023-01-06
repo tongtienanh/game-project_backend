@@ -38,7 +38,7 @@ export class GenerateRolePermissionCommand extends CommandRunner {
         where: {name: module.name}
       });
       if (!moduleEntity) {
-        const moduleEntity = new ModulePermission();
+        moduleEntity = new ModulePermission();
         moduleEntity.name = module.name;
         moduleEntity.description = module.description;
         moduleEntity.createdAt = new Date();

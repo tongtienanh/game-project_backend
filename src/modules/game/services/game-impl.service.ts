@@ -9,7 +9,7 @@ import 'dotenv/config';
 import {CoreLoggerService} from "../../common/services/logger/base-logger.service";
 import {ConvertNameImage} from "../../common/utils/convert-name-image";
 import {Download, GameCategory, GameTag} from "../../../database/entities";
-import {ResponseEntity} from "../../../common/resources/base/response.entity";
+import {PaginationInterface, ResponseEntity} from "../../../common/resources/base/response.entity";
 import {GameRequest} from "../dto/game.request";
 import {gameCategories, gameTags, optionGame, TYPE_GOOGLE, TYPE_LINKS} from "../constants/game.constant";
 import {pick} from 'lodash';
@@ -155,8 +155,8 @@ export class GameImplService {
             .where(queryParams.whereParam.join('AND'), queryParams.replacement)
             .limit(size)
             .offset(skip)
-            .getMany()
-        const result = qb.map((item) => {
+            .getManyAndCount()
+        const result = qb[0].map((item) => {
             const iGameTags = item.gameTag.map((iGameTag) => {
                 iGameTag["name"] = gameTags[iGameTag.tagId];
                 const tags = optionGame.find(iOption => iOption.id == iGameTag.tagId)
@@ -182,7 +182,19 @@ export class GameImplService {
                 download: downloads
             }
         })
-        return new ResponseEntity(result);
+        const totalRecord = qb[1]
+        const pagination: PaginationInterface = {
+            totalElements: totalRecord,
+            totalPages: Math.ceil(totalRecord / size),
+            numberOfElements: qb[0].length,
+            page,
+            size
+        }
+        return new ResponseEntity(
+            result,
+            null,
+            pagination
+        );
     }
 
     getGameFilter(request: GameRequest) {
