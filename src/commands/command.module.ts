@@ -4,7 +4,7 @@ import { RolePermission } from './../database/entities/role/role-permissions.ent
 import { Module } from '@nestjs/common';
 import { GenerateRolePermissionCommand } from './role-permission/generate-role.command';
 import { ModulePermission } from './../database/entities/role/module.entity';
-import { Permission } from './../database/entities/role/permission.entity';
+import { Permissions } from './../database/entities/role/permission.entity';
 import {GenerateTagCommand} from "./tag/generate-tag.command";
 import {Category, Tag} from "../database/entities";
 import {GenerateCategoryCommand} from "./category/generate-category.command";
@@ -14,7 +14,7 @@ import {GenerateCategoryCommand} from "./category/generate-category.command";
       Role,
       RolePermission,
       ModulePermission,
-      Permission,
+      Permissions,
       Tag,
       Category,
     ]),

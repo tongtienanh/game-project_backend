@@ -1,5 +1,5 @@
 import {Injectable} from '@nestjs/common';
-import {CreateGameDto} from '../dto/create-game.dto';
+import {CreateGameDto, DeleteGames} from '../dto/create-game.dto';
 import {UpdateGameDto} from '../dto/update-game.dto';
 import {InjectRepository} from "@nestjs/typeorm";
 import {Game} from "../../../database/entities/game/game.entity";
@@ -201,7 +201,7 @@ export class GameImplService {
         let whereParam = [];
         let replacement = {}
         if (request.tags?.length) {
-            whereParam.push(`gameTag.game_id IN (:tags)`)
+            whereParam.push(`gameTag.tag_id IN (:tags)`)
             replacement['tags'] = request.tags
         }
         if (request.categories?.length) {
@@ -217,15 +217,27 @@ export class GameImplService {
             replacement
         }
     }
+
+    async remove(request: DeleteGames): Promise<boolean> {
+        for (const gameId of request.ids) {
+            const game = await this.gameRepository.findOne({
+                relations: ["download", "gameTag", "gameCategory"],
+                where: {
+                    id: gameId
+                }
+            })
+            this.logger.debug("game:", game)
+            if (!game) throw new Error(`Game có id ${gameId} không tồn tại, vui lòng thử lại!`)
+            await this.gameRepository.softDelete(game)
+        }
+        return;
+
+    }
     findOne(id: number) {
         return `This action returns a #${id} game`;
     }
 
     update(id: number, updateGameDto: UpdateGameDto) {
         return `This action updates a #${id} game`;
-    }
-
-    remove(id: number) {
-        return `This action removes a #${id} game`;
     }
 }

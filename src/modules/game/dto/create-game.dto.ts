@@ -48,10 +48,17 @@ export class CreateGameDto {
     }
 
 }
+
 class Link {
     @Transform(TransformUtils.parseNumber)
     type: number;
 
     @Transform(TransformUtils.parseString)
     url: string;
+}
+
+export class DeleteGames {
+    @IsNotEmpty({message: "Ids khồng được để trống"})
+    @Transform(TransformUtils.parseNumberArray)
+    ids: number[];
 }

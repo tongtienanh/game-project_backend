@@ -2,9 +2,10 @@ import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { CoreBaseEntity } from '../core/base.entity';
 import { ModulePermission } from './module.entity';
 import { RolePermission } from './role-permissions.entity';
+import {Role} from "./role.entity";
 
 @Entity('permissions')
-export class Permission extends CoreBaseEntity {
+export class Permissions extends CoreBaseEntity {
   @Column()
   name: string;
 
@@ -19,8 +20,8 @@ export class Permission extends CoreBaseEntity {
   module: ModulePermission;
 
   @OneToMany(
-    () => RolePermission,
-    (rolePermission) => rolePermission.permission,
+    () => Role,
+    (role) => role.permission,
   )
-  rolePermissions: [];
+  role: [];
 }

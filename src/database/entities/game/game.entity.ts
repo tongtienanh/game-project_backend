@@ -21,12 +21,12 @@ export class Game extends CoreBaseEntity {
     @Column()
     slug: string;
 
-    @OneToMany(() => GameTag, (gameTag) => gameTag.game, { cascade: ['insert', 'update']})
+    @OneToMany(() => GameTag, (gameTag) => gameTag.game, { cascade: ['insert', 'update', 'soft-remove']})
     gameTag: GameTag[];
 
-    @OneToMany(() => Download, (download) => download.game, { cascade: ['insert', 'update']})
+    @OneToMany(() => Download, (download) => download.game, { cascade: ['insert', 'update', 'soft-remove']})
     download: Download[];
 
-    @OneToMany(() => GameCategory, (gameCategory) => gameCategory.game, {cascade: ['insert', 'update']})
+    @OneToMany(() => GameCategory, (gameCategory) => gameCategory.game, {cascade: ['insert', 'update', 'soft-remove']})
     gameCategory: GameCategory[];
 }
