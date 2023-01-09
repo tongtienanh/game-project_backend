@@ -170,7 +170,6 @@ export class GameImplService {
             const downloads = item.download.map((iDownload) => {
                 return {
                     type: iDownload.type,
-                    name: iDownload.type == 1 ? 'Google link': 'Fshare Link',
                     id: iDownload.id,
                     url: iDownload.link
                 };
@@ -218,7 +217,7 @@ export class GameImplService {
         }
     }
 
-    async remove(request: DeleteGames): Promise<boolean> {
+    async remove(request: DeleteGames): Promise<ResponseEntity<boolean>> {
         for (const gameId of request.ids) {
             const game = await this.gameRepository.findOne({
                 relations: ["download", "gameTag", "gameCategory"],
@@ -227,10 +226,18 @@ export class GameImplService {
                 }
             })
             this.logger.debug("game:", game)
+            const downloadIds = game.download.map(iDownload => iDownload.id)
+            const categoryIds = game.gameCategory.map(iCategory => iCategory.id)
+            const tagIds = game.gameTag.map(iTag => iTag.id)
             if (!game) throw new Error(`Game có id ${gameId} không tồn tại, vui lòng thử lại!`)
-            await this.gameRepository.softDelete(game)
+            await Promise.all([
+                this.gameRepository.softDelete(game.id),
+                this.downloadRepository.softDelete(downloadIds),
+                this.gameRepository.softDelete(categoryIds),
+                this.gameRepository.softDelete(tagIds),
+            ])
         }
-        return;
+        return new ResponseEntity<boolean>(true);
 
     }
     findOne(id: number) {

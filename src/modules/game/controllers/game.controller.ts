@@ -32,7 +32,7 @@ export class GameController {
     }
 
     @Delete('delete')
-    remove(@Query() request: DeleteGames) {
+    remove(@Query() request: DeleteGames): Promise<ResponseEntity<boolean>> {
         return this.gameService.remove(request);
     }
 
