@@ -14,10 +14,4 @@ export class Role extends CoreBaseEntity {
 
   @OneToMany(() => RolePermission, (rolePermission) => rolePermission.role)
   rolePermission: RolePermission[];
-
-  @OneToMany(() => UserRole, (userRole) => userRole.role)
-  userRole: UserRole[];
-
-  @ManyToOne(() => Permissions, (permission) => permission.role)
-  permission: Permissions;
 }

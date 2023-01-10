@@ -8,7 +8,7 @@ import { AuthImplService } from './services/auth-impl.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/database/entities/user/user.entity';
-
+import {RolePermission} from "../../database/entities";
 @Module({
   imports: [
     PassportModule,
@@ -16,7 +16,7 @@ import { User } from 'src/database/entities/user/user.entity';
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '1d' },
     }),
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, RolePermission]),
   ],
   providers: [
     {

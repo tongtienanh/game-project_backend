@@ -18,9 +18,10 @@ export class RolePermission extends CoreBaseEntity {
   permissionId!: number;
 
   @ManyToOne(() => Role, (role) => role.rolePermission)
+  @JoinColumn({ name: "role_id" })
   role: Role;
 
-  // @ManyToOne(() => Permissions, (permission) => permission.rolePermissions)
-  // @JoinColumn({ name: "permission_id", referencedColumnName: "id"})
-  // permission: Permissions;
+  @ManyToOne(() => Permissions, (permission) => permission.id)
+  @JoinColumn({ name: "permission_id" })
+  permission: Permissions;
 }

@@ -4,16 +4,19 @@ import {AuthService} from './auth.service';
 import {LoginRequest} from './../requests/login.request';
 import {Inject} from '@nestjs/common/decorators';
 import {User} from 'src/database/entities/user/user.entity';
-import {Repository} from 'typeorm';
+import {Permissions} from "src/database/entities/role/permission.entity";
+import {In, Repository} from 'typeorm';
 import {UnauthorizedException} from '@nestjs/common/exceptions';
 import {HashUtils} from './../utils/bcrypt.utils';
 import {InjectRepository} from '@nestjs/typeorm';
+import {RolePermission} from "../../../database/entities";
 
 @Injectable()
 export class AuthImplService implements AuthService {
     constructor(
         private jwtService: JwtService,
         @InjectRepository(User) private userRepository: Repository<User>,
+        @InjectRepository(RolePermission) private rolePermissionRepository: Repository<RolePermission>,
     ) {
     }
 
@@ -35,5 +38,22 @@ export class AuthImplService implements AuthService {
             access_token: this.jwtService.sign({userId}),
             userId,
         };
+    }
+    async findById(userId: number): Promise<User> {
+         const user = await this.userRepository.findOne({
+             relations: ["userRoles"],
+             where: {
+                 id: userId
+             }
+         })
+        return user;
+    }
+    async getPermissionByRoleIds(roleIds:number[]): Promise<RolePermission[]> {
+        return this.rolePermissionRepository.find({
+            relations: ["permission"],
+            where: {
+                roleId: In(roleIds)
+            }
+        })
     }
 }

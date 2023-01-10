@@ -15,13 +15,7 @@ export class Permissions extends CoreBaseEntity {
   @Column({ name: 'module_id' })
   moduleId: number;
 
-  @ManyToOne(() => ModulePermission, (module) => module.permissions)
+  @ManyToOne(() => ModulePermission, (module) => module.id)
   @JoinColumn({ name: 'module_id' })
   module: ModulePermission;
-
-  @OneToMany(
-    () => Role,
-    (role) => role.permission,
-  )
-  role: [];
 }

@@ -228,6 +228,7 @@ export class GameImplService {
             })
             this.logger.debug("game:", game)
             if (!game) throw new Error(`Game có id ${gameId} không tồn tại, vui lòng thử lại!`)
+            await this.gameRepository.softDelete(game.id)
             await this.gameRepository.softDelete(game)
         }
         return;
