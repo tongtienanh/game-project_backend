@@ -19,7 +19,10 @@ export class User extends CoreBaseEntity{
     @Column({nullable: true})
     gender: number;
 
-    @OneToMany(() => UserRole, (userRole) => userRole.user)
+    @Column({nullable: true})
+    fullname: string;
+
+    @OneToMany(() => UserRole, (userRole) => userRole.user, {cascade: ["update", "insert"]})
     userRoles: UserRole[];
 
     @JoinColumn({ name: 'avatarId' })

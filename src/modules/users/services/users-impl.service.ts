@@ -3,7 +3,7 @@ import {CreateUserDto} from '../dto/create-user.dto';
 import {UpdateUserDto} from '../dto/update-user.dto';
 import {InjectRepository} from "@nestjs/typeorm";
 import {User} from "../../../database/entities/user/user.entity";
-import {Repository} from "typeorm";
+import {Like, Repository} from "typeorm";
 import {UserRole} from '../../../database/entities/role/user-role.entity';
 import {CoreLoggerService} from '../../common/services/logger/base-logger.service';
 import {UserDto} from "../dto/user.dto";
@@ -21,11 +21,19 @@ export class UsersImplService {
 
     private readonly logger = new CoreLoggerService("UsersImplService.name", true);
 
-    async create(body: CreateUserDto): Promise<boolean> {
-        const user = body.toEntity();
-        await this.userRepository.insert(user);
-
-        await this.setUserRoles(body.roleIds, user.id)
+    async create(request: CreateUserDto): Promise<boolean> {
+        let user = request.toEntity();
+        if (request.id) {
+            user = await this.userRepository.findOne({
+                relations: ["userRoles"],
+                where: {
+                    id: request.id
+                }
+            })
+        }
+        const userRoles = this.setUserRoles(request.roleIds)
+        user.userRoles = userRoles;
+        await this.userRepository.save(user);
 
         return true;
     }
@@ -33,12 +41,14 @@ export class UsersImplService {
     async findAll(query: UserDto): Promise<ResponseEntity<User[]>> {
         const {page = 1, size = 10} = query;
         const skip = (page - 1) * size;
-        const whereParams = {};
+        const whereParams = [];
         if (query.search) {
-            whereParams["name"] = query.search;
+            whereParams.push({username: query.search});
+            whereParams.push({fullname: Like(query.search + '%')});
+            whereParams.push({id: query.search});
         }
         const [users, count] = await this.userRepository.findAndCount({
-            select: ["id", "username", "gender", "age"],
+            select: ["id", "username", "gender", "age", "fullname"],
             where: whereParams,
             skip,
             take: size
@@ -61,21 +71,22 @@ export class UsersImplService {
         return `This action updates a #${id} user`;
     }
 
-    remove(id: number) {
-        return `This action removes a #${id} user`;
+    async remove(id: number): Promise<boolean> {
+        if (!id) throw new Error("Not found id");
+        await this.userRepository.softDelete(id);
+
+        return true;
     }
 
-    async setUserRoles(roleIds, userId): Promise<void> {
+    setUserRoles(roleIds) {
         const userRoles = [];
         for (const roleId of roleIds) {
             const userRole = new UserRole();
-            userRole.userId = userId;
             userRole.roleId = roleId;
             userRole.createdAt = new Date();
             userRole.updatedAt = new Date();
             userRoles.push(userRole);
         }
-
-        await this.userRoleRepository.insert(userRoles);
+        return userRoles
     }
 }

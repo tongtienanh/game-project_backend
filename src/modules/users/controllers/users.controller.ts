@@ -42,7 +42,9 @@ export class UsersController {
     }
 
     @Delete(':id')
-    remove(@Param('id') id: string) {
-        return this.usersService.remove(+id);
+    async remove(@Param('id') id: number): Promise<ResponseEntity<boolean>> {
+        await this.usersService.remove(id);
+
+        return new ResponseEntity<boolean>(true);
     }
 }
