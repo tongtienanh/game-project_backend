@@ -41,7 +41,7 @@ export class AuthImplService implements AuthService {
     }
     async findById(userId: number): Promise<User> {
          const user = await this.userRepository.findOne({
-             relations: ["userRoles"],
+             // relations: ["userRoles"],
              where: {
                  id: userId
              }
@@ -50,7 +50,7 @@ export class AuthImplService implements AuthService {
     }
     async getPermissionByRoleIds(roleIds:number[]): Promise<RolePermission[]> {
         return this.rolePermissionRepository.find({
-            relations: ["permission"],
+            // relations: ["permission"],
             where: {
                 roleId: In(roleIds)
             }

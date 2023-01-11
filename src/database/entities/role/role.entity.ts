@@ -12,6 +12,6 @@ export class Role extends CoreBaseEntity {
   @Column()
   description: string;
 
-  @OneToMany(() => RolePermission, (rolePermission) => rolePermission.role)
+  @OneToMany(() => RolePermission, (rolePermission) => rolePermission.role, {cascade: ['insert', 'update']})
   rolePermission: RolePermission[];
 }

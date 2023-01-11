@@ -1,26 +1,27 @@
-import {Controller, Get, Param} from "@nestjs/common";
+import {Body, Controller, Get, Param, Post, Query} from "@nestjs/common";
 import {AclImplService} from "../services/acl-impl.service";
 import {ResponseEntity} from "../../../common/resources/base/response.entity";
 import {ModulePermission, Permissions} from "../../../database/entities";
 import {Permission} from "../../auth/decorators/permisson.decorator";
+import {StoreRoleRequest} from "../requests/store-role.request";
 
-@Controller('api/module')
+@Controller('api/role')
 export class AclController {
     constructor(
         private readonly aclService: AclImplService
     ) {}
-    @Get()
+    @Get('/module')
     @Permission()
     async getListModule(): Promise<ResponseEntity<ModulePermission[]>> {
         const response = await this.aclService.getListModule();
 
         return new ResponseEntity<ModulePermission[]>(response)
     }
-
-    @Get('permission/:id')
+    @Post()
     @Permission()
-    async getPermisson(@Param("id") permissionId: number): Promise<ResponseEntity<Permissions>> {
-        const resposne = await this.aclService.getPermission(permissionId);
-        return new ResponseEntity<Permissions>(resposne);
+    async storeRole(@Body() request: StoreRoleRequest): Promise<any> {
+        const response = await this.aclService.store(request);
+
+        return;
     }
 }

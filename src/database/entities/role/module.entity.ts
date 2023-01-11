@@ -10,6 +10,6 @@ export class ModulePermission extends CoreBaseEntity {
   @Column()
   description: string;
 
-  // @OneToMany(() => Permissions, (permission) => permission.module)
-  // permissions: Permissions[];
+  @OneToMany(() => Permissions, (permission) => permission.module)
+  permissions: Permissions[];
 }
