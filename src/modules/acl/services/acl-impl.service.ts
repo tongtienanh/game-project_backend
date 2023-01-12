@@ -27,7 +27,7 @@ export class AclImplService {
         });
     }
 
-    async store(request: StoreRoleRequest) {
+    async store(request: StoreRoleRequest): Promise<boolean> {
         let entity = request.toEntity();
         if (request.id) {
             entity = await this.roleRepository.findOne({
@@ -48,5 +48,12 @@ export class AclImplService {
         }
         entity.rolePermission = rolePermissions;
         await this.roleRepository.save(entity);
+
+        return true;
+    }
+
+    async listRole(): Promise<Role[]> {
+        const roles = await this.roleRepository.find()
+        return roles
     }
 }

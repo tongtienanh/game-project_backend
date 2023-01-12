@@ -16,6 +16,6 @@ export class UserRole extends CoreBaseEntity {
   user: User;
 
   @ManyToOne(() => Role, (role) => role.id)
-  @JoinColumn({ name: "role_id" })
+  @JoinColumn({ name: "roleId" })
   role: Role;
 }

@@ -87,6 +87,7 @@ export class UsersImplService {
             userRole.updatedAt = new Date();
             userRoles.push(userRole);
         }
+        this.logger.debug("roleIds:", userRoles)
         return userRoles
     }
 }

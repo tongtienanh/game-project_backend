@@ -6,7 +6,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateUserDto {
   @Transform(TransformUtils.parseNumber)
-  @IsNumber()
+  @IsOptional()
   id?: number;
 
   @IsNotEmpty()
