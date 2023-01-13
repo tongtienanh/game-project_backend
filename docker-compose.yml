@@ -1,58 +1,22 @@
-version: '3.7'
+version: '3.2'
+
 services:
-  vh_erp_db:
-    image: mysql:8
-    container_name: vh_erp_db
-    restart: unless-stopped
+  db:
+    image: mysql:8.0
+    container_name: appsDB
+    restart: always
+    ports:
+      - '6603:3306'
     environment:
       MYSQL_ROOT_PASSWORD: 123456
-      MYSQL_DATABASE: db_vuihoc
-      MYSQL_USER: vuihoc
-      MYSQL_PASSWORD: 123456
-    ports:
-      - "6034:3306"
-    volumes:
-      - vh_erp_mysqldata:/var/lib/mysql
-    networks:
-      - vh_erp_2022
 
-  vh_erp_phpmyadmin:
+  app:
+    depends_on:
+      - db
     image: phpmyadmin/phpmyadmin
-    container_name: ta_phpmyadmin
-    links:
-      - vh_erp_db
-    environment:
-      PMA_HOST: vh_erp_db
-      PMA_PORT: 3306
-      PMA_ARBITRARY: 1
-    restart: unless-stopped
+    container_name: phpmyadmin
+    restart: always
     ports:
-      - 8095:80
-    networks:
-      - vh_erp_2022
-  
-#   vh_erp_redis:
-#     image: redis
-#     container_name: vh_erp_redis
-#     ports: 
-#       - 6382:6379
-#     networks: 
-#       - vh_erp_2022
-
-#   vh_erp_mongodb:
-#     image: mongo:4.4
-#     container_name: vh_erp_mongodb
-#     restart: unless-stopped
-#     ports: 
-#       - 27018:27017
-#     networks: 
-#       - vh_erp_2022
-
-
-volumes:
-  vh_erp_mysqldata:
-    driver: local
-
-networks:
-  vh_erp_2022:
-    driver: bridge
+      - '8081:80'
+    environment:
+      PMA_HOST: db

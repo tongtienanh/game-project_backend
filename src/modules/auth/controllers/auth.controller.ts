@@ -8,8 +8,7 @@ export class AuthController {
   constructor(@Inject(AuthService) private authService: AuthService) {}
 
   @Post('/login')
-  async logion(@Body() request: LoginRequest) {
-    console.log(1111);
+  async login(@Body() request: LoginRequest) {
     const data = await this.authService.login(request);
 
     return new ResponseEntity<string>(data);

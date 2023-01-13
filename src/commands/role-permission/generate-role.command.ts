@@ -6,7 +6,7 @@ import { Repository } from 'typeorm';
 import { RolePermission } from './../../database/entities/role/role-permissions.entity';
 import { ModuleConstant } from './../../modules/acl/constant/module.constant';
 import { ModulePermission } from './../../database/entities/role/module.entity';
-import { Permission } from './../../database/entities/role/permission.entity';
+import { Permissions } from './../../database/entities/role/permission.entity';
 
 @Command({ name: 'generate-role', description: 'role' })
 export class GenerateRolePermissionCommand extends CommandRunner {
@@ -17,8 +17,8 @@ export class GenerateRolePermissionCommand extends CommandRunner {
     private rolePermissionRepository: Repository<RolePermission>,
     @InjectRepository(ModulePermission)
     private moduleRepository: Repository<ModulePermission>,
-    @InjectRepository(Permission)
-    private permissionRepository: Repository<Permission>,
+    @InjectRepository(Permissions)
+    private permissionRepository: Repository<Permissions>,
   ) {
     super();
   }
@@ -38,7 +38,7 @@ export class GenerateRolePermissionCommand extends CommandRunner {
         where: {name: module.name}
       });
       if (!moduleEntity) {
-        const moduleEntity = new ModulePermission();
+        moduleEntity = new ModulePermission();
         moduleEntity.name = module.name;
         moduleEntity.description = module.description;
         moduleEntity.createdAt = new Date();
@@ -52,7 +52,7 @@ export class GenerateRolePermissionCommand extends CommandRunner {
           where: {name: permission.name}
         });
         if (!isExistPermission) {
-          const permissionEntity = new Permission();
+          const permissionEntity = new Permissions();
           permissionEntity.name = permission.name;
           permissionEntity.description = permission.description;
           permissionEntity.moduleId = moduleEntity.id;

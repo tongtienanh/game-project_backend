@@ -1,6 +1,6 @@
 import { Column, Entity, OneToMany } from 'typeorm';
 import { CoreBaseEntity } from '../core/base.entity';
-import { Permission } from './permission.entity';
+import { Permissions } from './permission.entity';
 
 @Entity('modules')
 export class ModulePermission extends CoreBaseEntity {
@@ -10,6 +10,6 @@ export class ModulePermission extends CoreBaseEntity {
   @Column()
   description: string;
 
-  @OneToMany(() => Permission, (permission) => permission.module)
-  permissions: Permission[];
+  @OneToMany(() => Permissions, (permission) => permission.module)
+  permissions: Permissions[];
 }

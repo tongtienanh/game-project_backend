@@ -15,7 +15,7 @@ export class UserRole extends CoreBaseEntity {
   @JoinColumn({ name: 'userId', referencedColumnName: 'id' })
   user: User;
 
-  @ManyToOne(() => Role, (role) => role.userRole)
-  @JoinColumn({ name: 'roleId', referencedColumnName: 'id' })
+  @ManyToOne(() => Role, (role) => role.id)
+  @JoinColumn({ name: "roleId" })
   role: Role;
 }

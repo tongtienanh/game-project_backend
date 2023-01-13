@@ -10,18 +10,18 @@ export abstract class CoreBaseEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @CreateDateColumn()
+  @CreateDateColumn({type: "timestamp", default: () => "CURRENT_TIMESTAMP(6", select: false})
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)", onUpdate: "CURRENT_TIMESTAMP(6)", select: false})
   updatedAt: Date;
 
-  @DeleteDateColumn()
+  @DeleteDateColumn({select: false})
   deletedAt: Date;
 
-  @Column({ name: 'createdBy' })
+  @Column({ name: 'createdBy', select: false})
   createdBy?: number;
 
-  @Column()
+  @Column({select: false})
   updatedBy?: number;
 }

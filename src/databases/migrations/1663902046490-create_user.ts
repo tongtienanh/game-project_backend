@@ -36,6 +36,11 @@ export class createUser1663902046490 implements MigrationInterface {
             type: 'int',
             isNullable: true,
           }),
+          new TableColumn({
+            name: 'fullname',
+            type: 'varchar',
+            isNullable: false,
+          }),
           ...DatabaseUtils.getDefaultColumns(),
         ],
       }),
