@@ -13,6 +13,9 @@ import {PaginationInterface, ResponseEntity} from "../../../common/resources/bas
 import {GameRequest} from "../dto/game.request";
 import {gameCategories, gameTags, optionGame, TYPE_GOOGLE, TYPE_LINKS} from "../constants/game.constant";
 import {pick} from 'lodash';
+import sharp from "sharp";
+import {LocalFileDto} from "../../users/dto/local-file.dto";
+
 @Injectable()
 export class GameImplService {
     constructor(
@@ -130,6 +133,7 @@ export class GameImplService {
         }
         return tags;
     }
+
     storeCategory(request: CreateGameDto): GameCategory[] {
         if (!request.categories.length) return [];
         const categories = [];
@@ -240,11 +244,26 @@ export class GameImplService {
         return new ResponseEntity<boolean>(true);
 
     }
+
     findOne(id: number) {
         return `This action returns a #${id} game`;
     }
 
     update(id: number, updateGameDto: UpdateGameDto) {
         return `This action updates a #${id} game`;
+    }
+
+    async sharpFunction(fileData: LocalFileDto) {
+        const sharp = require('sharp');
+        const imageBuffer = await sharp("uploads\\\\avatar\\\\anh.jpg")
+            .resize({
+                fit: sharp.fit.contain,
+            })
+            .toFormat('webp', { progressive: true, quality: 80 })
+            .toBuffer()
+        console.log({imageBuffer})
+        const bucketS3 = "image-game";
+        const dataS3 = await this.uploadS3(imageBuffer, bucketS3, "alo.webp");
+
     }
 }
