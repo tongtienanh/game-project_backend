@@ -14,6 +14,7 @@ import {
     Download,
     Category,
     GameCategory,
+    Media,
 } from '../database/entities';
 import 'dotenv/config';
 
@@ -28,7 +29,7 @@ export const typeormAsyncConfig: TypeOrmModuleAsyncOptions = {
             username: process.env.DB_USER_NAME,
             password: process.env.DB_PASSWORD,
             database: process.env.DB_NAME,
-            entities: [User, UserRole, RolePermission, Role, Permissions, ModulePermission, LocalFile, Game, GameTag, Tag, Download, Category, GameCategory],
+            entities: [User, UserRole, RolePermission, Role, Permissions, ModulePermission, LocalFile, Game, GameTag, Tag, Download, Category, GameCategory, Media],
             synchronize: false,
             logging: true,
             migrations: ['dist/databases/migrations/**/*{.ts,.js}'],

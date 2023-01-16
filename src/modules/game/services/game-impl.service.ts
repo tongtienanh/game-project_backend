@@ -11,7 +11,7 @@ import {ConvertNameImage} from "../../common/utils/convert-name-image";
 import {Download, GameCategory, GameTag} from "../../../database/entities";
 import {PaginationInterface, ResponseEntity} from "../../../common/resources/base/response.entity";
 import {GameRequest} from "../dto/game.request";
-import {gameCategories, gameTags, optionGame, TYPE_GOOGLE, TYPE_LINKS} from "../constants/game.constant";
+import {gameCategories, gameTags, IMAGES, optionGame, TYPE_GOOGLE, TYPE_LINKS} from "../constants/game.constant";
 import {pick} from 'lodash';
 import sharp from "sharp";
 import {LocalFileDto} from "../../users/dto/local-file.dto";
@@ -30,16 +30,20 @@ export class GameImplService {
 
     private readonly logger = new CoreLoggerService(GameImplService.name)
 
-    async upload(file) {
-        let {originalname} = file;
-        const splitName = originalname.split('.');
-        const typeImage = splitName[splitName?.length - 1];
-        originalname = ConvertNameImage.toSlug(splitName[0]) + '.' + typeImage;
-        this.logger.debug("originalname:", originalname)
-        const bucketS3 = "image-game";
-        const dataS3 = await this.uploadS3(file.buffer, bucketS3, originalname);
-
+    async upload(file: LocalFileDto) {
+        const dataS3 = await this.sharpFunction(file)
         return new ResponseEntity<any>(dataS3);
+        // return dataS3;
+
+        // let {originalname} = file;
+        // const splitName = originalname.split('.');
+        // const typeImage = splitName[splitName?.length - 1];
+        // originalname = ConvertNameImage.toSlug(splitName[0]) + '.' + typeImage;
+        // this.logger.debug("originalname:", originalname)
+        // const bucketS3 = "image-game";
+        // const dataS3 = await this.uploadS3(file.buffer, bucketS3, originalname);
+        //
+        // return new ResponseEntity<any>(dataS3);
     }
 
     async uploadS3(file, bucket, originalname) {
@@ -70,9 +74,9 @@ export class GameImplService {
                 resolve(data);
             });
         });
-// // Create the parameters for calling createBucket
+// Create the parameters for calling createBucket
 //     var bucketParams = {
-//       Bucket : "image-game"
+//       Bucket : "image-96x128"
 //     };
 //
 //
@@ -255,15 +259,21 @@ export class GameImplService {
 
     async sharpFunction(fileData: LocalFileDto) {
         const sharp = require('sharp');
-        const imageBuffer = await sharp("uploads\\\\avatar\\\\anh.jpg")
-            .resize({
-                fit: sharp.fit.contain,
-            })
-            .toFormat('webp', { progressive: true, quality: 80 })
-            .toBuffer()
-        console.log({imageBuffer})
-        const bucketS3 = "image-game";
-        const dataS3 = await this.uploadS3(imageBuffer, bucketS3, "alo.webp");
-
+        const outputName = fileData.fileName.split(".")[0];
+        const result = [];
+        for (const image of IMAGES) {
+            const imageBuffer = await sharp(fileData.path)
+                .resize({
+                    width: image.width,
+                    height: image.height,
+                    fit: sharp.fit.cover,
+                })
+                .toFormat('webp', { progressive: true, quality: 85 })
+                .toBuffer()
+            const bucketS3 = image.bucket;
+            const response =  await this.uploadS3(imageBuffer, bucketS3, `${outputName}-${image.height}x${image.width}.webp`);
+            result.push(response)
+        }
+        return result;
     }
 }

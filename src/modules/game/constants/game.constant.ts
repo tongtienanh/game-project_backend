@@ -1,3 +1,5 @@
+import 'dotenv/config';
+import * as process from "process";
 export const TAG_HANH_DONG = 1;
 export const TAG_THE_THAO = 2;
 export const TAG_SINH_TON = 3;
@@ -82,3 +84,10 @@ export const gameCategories = {
     3: "Game update DLC",
     4: "Game Việt hóa",
 }
+const TYPE_203_271 = 1;
+const TYPE_96_128 = 2;
+
+export const IMAGES = [
+    {type: TYPE_203_271, bucket: process.env["S3_BUCKET_203x271"], width: 203, height: 271},
+    {type: TYPE_96_128, bucket: process.env["S3_BUCKET_96x128"], width: 96, height: 128},
+]

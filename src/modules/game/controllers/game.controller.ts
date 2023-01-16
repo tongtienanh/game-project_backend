@@ -36,9 +36,24 @@ export class GameController {
     }
 
     @Post('upload/image')
-    @UseInterceptors(FileInterceptor('file'))
-    async upload(@UploadedFile() file) {
-        return await this.gameService.upload(file)
+    @UseInterceptors(FileInterceptor("file", {
+        storage: diskStorage({
+            destination: './uploads/avatar',
+            filename(req, file: Express.Multer.File, callback: (error: (Error | null), filename: string) => void) {
+                console.log({file})
+                const fileName = ConvertNameImage.toSlug(file.originalname.split('.')[0]);
+                const fileExtName = extname(file.originalname);
+                callback(null, `${fileName}${fileExtName}`)
+            },
+        })
+    }))
+    async upload(@UploadedFile(new ParseFilePipe()) file) {
+        const fileData: LocalFileDto = {
+            path: file.path,
+            fileName: file.originalname,
+            mimetype: file.mimetype
+        };
+        return await this.gameService.upload(fileData)
     }
 
     @Get('all')
@@ -68,7 +83,7 @@ export class GameController {
             },
         })
     }))
-    async userSharp(@UploadedFile(new ParseFilePipe()) file) {
+    async useSharp(@UploadedFile(new ParseFilePipe()) file) {
         const fileData: LocalFileDto = {
             path: file.path,
             fileName: file.originalname,

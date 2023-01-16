@@ -3,6 +3,7 @@ import {Column, Entity, OneToMany} from "typeorm";
 import {GameTag} from "./game-tag.entity";
 import {Download} from "./download.entity";
 import {GameCategory} from "./game-category.entity";
+import {Media} from "./media.entity";
 
 @Entity("game")
 export class Game extends CoreBaseEntity {
@@ -29,4 +30,7 @@ export class Game extends CoreBaseEntity {
 
     @OneToMany(() => GameCategory, (gameCategory) => gameCategory.game, {cascade: ['insert', 'update', 'soft-remove']})
     gameCategory: GameCategory[];
+
+    @OneToMany(() => Media, (media) => media.game)
+    media: Media[];
 }
