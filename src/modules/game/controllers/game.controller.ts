@@ -67,16 +67,11 @@ export class GameController {
         return this.gameService.remove(request);
     }
 
-    @Patch(':id')
-    update(@Param('id') id: string, @Body() updateGameDto: UpdateGameDto) {
-        return this.gameService.update(+id, updateGameDto);
-    }
     @Post('sharp')
     @UseInterceptors(FileInterceptor("image", {
         storage: diskStorage({
             destination: './uploads/avatar',
             filename(req, file: Express.Multer.File, callback: (error: (Error | null), filename: string) => void) {
-                console.log({file})
                 const fileName = ConvertNameImage.toSlug(file.originalname.split('.')[0]);
                 const fileExtName = extname(file.originalname);
                 callback(null, `${fileName}${fileExtName}`)

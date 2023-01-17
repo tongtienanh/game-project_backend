@@ -33,7 +33,6 @@ export class GameImplService {
     async upload(file: LocalFileDto) {
         const dataS3 = await this.sharpFunction(file)
         return new ResponseEntity<any>(dataS3);
-        // return dataS3;
 
         // let {originalname} = file;
         // const splitName = originalname.split('.');
@@ -248,15 +247,6 @@ export class GameImplService {
         return new ResponseEntity<boolean>(true);
 
     }
-
-    findOne(id: number) {
-        return `This action returns a #${id} game`;
-    }
-
-    update(id: number, updateGameDto: UpdateGameDto) {
-        return `This action updates a #${id} game`;
-    }
-
     async sharpFunction(fileData: LocalFileDto) {
         const sharp = require('sharp');
         const outputName = fileData.fileName.split(".")[0];
