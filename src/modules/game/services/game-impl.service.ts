@@ -1,5 +1,5 @@
 import {Injectable} from '@nestjs/common';
-import {CreateGameDto, DeleteGames} from '../dto/create-game.dto';
+import {CreateGameDto, DeleteGames, Images} from '../dto/create-game.dto';
 import {UpdateGameDto} from '../dto/update-game.dto';
 import {InjectRepository} from "@nestjs/typeorm";
 import {Game} from "../../../database/entities/game/game.entity";
@@ -8,7 +8,7 @@ import {S3} from 'aws-sdk';
 import 'dotenv/config';
 import {CoreLoggerService} from "../../common/services/logger/base-logger.service";
 import {ConvertNameImage} from "../../common/utils/convert-name-image";
-import {Download, GameCategory, GameTag} from "../../../database/entities";
+import {Download, GameCategory, GameTag, Media} from "../../../database/entities";
 import {PaginationInterface, ResponseEntity} from "../../../common/resources/base/response.entity";
 import {GameRequest} from "../dto/game.request";
 import {gameCategories, gameTags, IMAGES, optionGame, TYPE_GOOGLE, TYPE_LINKS} from "../constants/game.constant";
@@ -93,7 +93,7 @@ export class GameImplService {
         let entity = request.toEntity();
         if (request.gameId) {
             entity = await this.gameRepository.findOne({
-                relations: ["gameTag", "download"],
+                relations: ["gameTag", "download", "media"],
                 where: {
                     id: request.gameId
                 }
@@ -102,9 +102,13 @@ export class GameImplService {
         const links = this.storeLinkDownload(request);
         const tags = this.storeTags(request);
         const categories = this.storeCategory(request);
+        const storeImage = this.storeImage(request.images);
         entity.gameTag = tags;
         entity.download = links;
         entity.gameCategory = categories;
+        entity.media = storeImage;
+        console.log(entity)
+        console.log({storeImage})
         await this.gameRepository.save(entity);
 
         return true;
@@ -123,7 +127,20 @@ export class GameImplService {
         }
         return arrLink;
     }
-
+    storeImage(images: Images[]) {
+        const arrImages = [];
+        for (const img of images) {
+            const media = new Media();
+            media.type = img.type;
+            media.size = img.size;
+            media.uri = img.uri;
+            media.description = img.description;
+            media.createdAt = new Date();
+            media.updatedAt = new Date();
+            arrImages.push(media)
+        }
+        return arrImages;
+    }
     storeTags(request: CreateGameDto): GameTag[] {
         if (!request.tags.length) return [];
         const tags = [];
@@ -159,6 +176,7 @@ export class GameImplService {
             .innerJoinAndSelect(`${alias}.download`, 'download')
             .innerJoinAndSelect(`${alias}.gameTag`, 'gameTag')
             .innerJoinAndSelect(`${alias}.gameCategory`, 'gameCategory')
+            .innerJoinAndSelect(`${alias}.media`, 'media')
             .where(queryParams.whereParam.join('AND'), queryParams.replacement)
             .limit(size)
             .offset(skip)
@@ -182,7 +200,7 @@ export class GameImplService {
                 };
             })
             return {
-                ...pick(item, ['id', 'image', 'description', 'content', 'name']),
+                ...pick(item, ['id', 'image', 'description', 'content', 'name', "media"]),
                 gameTag: iGameTags,
                 gameCategory: categories,
                 download: downloads
@@ -249,6 +267,7 @@ export class GameImplService {
     }
     async sharpFunction(fileData: LocalFileDto) {
         const sharp = require('sharp');
+        var fs = require("fs")
         const outputName = fileData.fileName.split(".")[0];
         const result = [];
         for (const image of IMAGES) {
@@ -264,6 +283,8 @@ export class GameImplService {
             const response =  await this.uploadS3(imageBuffer, bucketS3, `${outputName}-${image.height}x${image.width}.webp`);
             result.push(response)
         }
+        fs.unlinkSync(fileData.path);
+
         return result;
     }
 }

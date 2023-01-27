@@ -1,4 +1,4 @@
-import {IsNotEmpty} from "class-validator";
+import {IsNotEmpty, IsOptional} from "class-validator";
 import {Transform} from "class-transformer";
 import {TransformUtils} from "../../core/utils/transform.utils";
 import {ApiProperty} from "@nestjs/swagger";
@@ -14,9 +14,8 @@ export class CreateGameDto {
     @ApiProperty({example: "call of dusty"})
     name: string;
 
-    @Transform(TransformUtils.parseString)
-    @ApiProperty({example: "tonganh.jpg"})
-    image: string;
+    @IsOptional()
+    images?: Images[];
 
     @Transform(TransformUtils.parseString)
     @ApiProperty({example: "The game of the year"})
@@ -37,7 +36,6 @@ export class CreateGameDto {
     toEntity(): Game {
         const entity = new Game();
         entity.name = this.name;
-        entity.image = this.image;
         entity.description = this.description;
         entity.slug = HelperUtils.toSlug(this.name);
         entity.content = this.content;
@@ -61,4 +59,10 @@ export class DeleteGames {
     @IsNotEmpty({message: "Ids khồng được để trống"})
     @Transform(TransformUtils.parseNumberArray)
     ids: number[];
+}
+export interface Images {
+    type: number,
+    size: string,
+    uri: string,
+    description?: string,
 }

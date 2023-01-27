@@ -31,6 +31,6 @@ export class Game extends CoreBaseEntity {
     @OneToMany(() => GameCategory, (gameCategory) => gameCategory.game, {cascade: ['insert', 'update', 'soft-remove']})
     gameCategory: GameCategory[];
 
-    @OneToMany(() => Media, (media) => media.game)
+    @OneToMany(() => Media, (media) => media.game, {cascade: ['insert', "update"]})
     media: Media[];
 }
